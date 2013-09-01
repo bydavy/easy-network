@@ -1,12 +1,15 @@
-apply plugin:'java'
-apply plugin:'idea'
-apply plugin:'findbugs'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+apply plugin: 'jdepend'
+apply plugin: 'jacoco'
 
-repositories{
+repositories {
     mavenCentral()
 }
 
-dependencies{
+dependencies {
     testCompile "junit:junit:4.11"
     compile "com.google.code.findbugs:jsr305:2.0.1"
     compile "com.google.code.findbugs:annotations:2.0.1"
@@ -15,6 +18,9 @@ dependencies{
 findbugs {
     ignoreFailures = true
     effort = "max"
-    reportLevel = "high"
+    reportLevel = "medium"
 }
 
+pmd {
+    ignoreFailures = true
+}
