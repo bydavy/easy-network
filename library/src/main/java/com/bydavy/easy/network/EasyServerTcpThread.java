@@ -14,19 +14,12 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class EasyServerTcpThread extends Thread implements SelectorLooper.SelectorMainLoopCallback, EasyServerTcpClientImpl.EasyServerTcpClientImplListener {
     private static final String TAG = "EasyServerTcpThread";
     private static final boolean DEBUG = EasyInternalSettings.DEBUG ? true : EasyInternalSettings.DEBUG_DEFAULT_FALSE;
     private static final boolean DEBUG_SELECTOR = EasyInternalSettings.DEBUG ? false : EasyInternalSettings.DEBUG_DEFAULT_FALSE;
     private static final String THREAD_NAME = "EasyServer TCP Thread";
-
-    private static final int CORE_POOL_SIZE = 5;
-    private static final int MAXIMUM_POOL_SIZE = 128;
-    private static final int KEEP_ALIVE = 1;
-    private static final int QUEUE_SIZE = 10;
 
     @Nonnull
     private final EasyServerTcpImpl mServer;
@@ -36,8 +29,6 @@ public class EasyServerTcpThread extends Thread implements SelectorLooper.Select
     private final EasyServerTcpHandler mHandler;
     @Nonnull
     private final Map<SocketChannel, EasyServerTcpClient> mClients;
-    @Nonnull
-    private final ExecutorService mExecutor;
     @Nonnull
     private final SelectorLooper mSelectorLooper;
 
@@ -51,8 +42,6 @@ public class EasyServerTcpThread extends Thread implements SelectorLooper.Select
         mServer = server;
         mChannel = channel;
         mHandler = handler;
-        final BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<Runnable>(QUEUE_SIZE);
-        mExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, workQueue, new MyThreadFactory());
         mClients = new HashMap<SocketChannel, EasyServerTcpClient>();
         mSelectorLooper = new SelectorLooper(selector, this);
     }
@@ -73,7 +62,6 @@ public class EasyServerTcpThread extends Thread implements SelectorLooper.Select
         }
 
         mHandler.onServerStop(mServer);
-        mExecutor.shutdown();
         EasyNetworkUtils.close(mChannel);
         if (DEBUG) {
             LogHelper.d(TAG, "Stopped " + getName());
@@ -177,46 +165,15 @@ public class EasyServerTcpThread extends Thread implements SelectorLooper.Select
         if (timeoutMs < 0) {
             timeoutMs = 0;
         }
-        mExecutor.awaitTermination(timeoutMs, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void interrupt() {
         super.interrupt();
-        mExecutor.shutdownNow();
     }
 
     @Override
     public void onMessageToSend(final @Nonnull EasyServerTcpClientImpl easyServerTcpClient) {
         mSelectorLooper.interestedInWrite(easyServerTcpClient.getChannel(), easyServerTcpClient);
-    }
-
-    static class MyThreadFactory implements ThreadFactory {
-        @Nonnull
-        private final ThreadGroup group;
-        // FIXME could reach Integer.MAX_VALUE (not likely but we should prevent it)
-        @Nonnull
-        private final AtomicInteger threadNumber;
-        @Nonnull
-        private final String namePrefix;
-
-        MyThreadFactory() {
-            threadNumber = new AtomicInteger(1);
-            final SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-            namePrefix = THREAD_NAME + "-pool-thread#";
-        }
-
-        @Nonnull
-        public Thread newThread(@Nonnull Runnable r) {
-            final Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
-            if (t.isDaemon()) {
-                t.setDaemon(false);
-            }
-            if (t.getPriority() != Thread.NORM_PRIORITY) {
-                t.setPriority(Thread.NORM_PRIORITY);
-            }
-            return t;
-        }
     }
 }
