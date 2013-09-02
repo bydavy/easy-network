@@ -16,16 +16,16 @@ public class PrefixedBySizeAsyncReader extends EasyMessageBaseAsyncReader {
     private static final boolean DEBUG_READ = EasyInternalSettings.DEBUG ? false : EasyInternalSettings.DEBUG_DEFAULT_FALSE;
 
     @GuardedBy("mLock")
-    boolean mReadContentLength;
+    private boolean mReadContentLength;
     @Nullable
     @GuardedBy("mLock")
-    private ByteBuffer mContentBuffer;
+    private final ByteBuffer mContentBuffer;
     @Nullable
     @GuardedBy("mLock")
-    private ByteBuffer mContentLengthBuffer;
+    private final ByteBuffer mContentLengthBuffer;
     @Nullable
     @GuardedBy("mLock")
-    private PrefixedBySizeReader mMessageReader;
+    private final PrefixedBySizeReader mMessageReader;
 
 
     public PrefixedBySizeAsyncReader(PrefixedBySizeReader messageReader) {
@@ -80,7 +80,9 @@ public class PrefixedBySizeAsyncReader extends EasyMessageBaseAsyncReader {
                         if (DEBUG) {
                             LogHelper.d(TAG, "Received " + easyMessage);
                         }
-                        mListener.onMessageRead(this, easyMessage);
+                        if (easyMessage != null) {
+                            mListener.onMessageRead(this, easyMessage);
+                        }
                         mContentBuffer.clear();
                         mReadContentLength = true;
                     }

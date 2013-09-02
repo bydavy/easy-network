@@ -6,6 +6,7 @@ import com.bydavy.easy.network.utils.EasyNetworkUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.WillClose;
 import javax.annotation.concurrent.GuardedBy;
 import java.io.IOException;
 import java.nio.channels.*;
@@ -43,7 +44,7 @@ public class SelectorLooper implements Runnable {
     /**
      * The main loop manages the selector lifecycle including the close
      */
-    public SelectorLooper(@Nonnull Selector selector, @Nonnull SelectorMainLoopCallback callback) {
+    public SelectorLooper(@Nonnull @WillClose Selector selector, @Nonnull SelectorMainLoopCallback callback) {
         Checker.nonNull(selector);
         Checker.nonNull(callback);
 
@@ -78,7 +79,7 @@ public class SelectorLooper implements Runnable {
                                 mCallback.writable(this, key);
                             }
                         } catch (CancelledKeyException e) {
-                            // Key cancelled
+                            // NOPMD - Nothing
                         }
                         // Consumed the key's ready opts
                         iter.remove();
@@ -87,7 +88,7 @@ public class SelectorLooper implements Runnable {
                 iterate();
             }
         } catch (IOException e) {
-            // Nothing
+            // NOPMD - Nothing
         } finally {
             EasyNetworkUtils.close(mSelector);
         }
@@ -165,7 +166,7 @@ public class SelectorLooper implements Runnable {
                 SelectionKey register = channel.register(mSelector, ops);
                 register.attach(attachment);
             } catch (ClosedChannelException e) {
-                // Nothing
+                // NOPMD - Nothing
             }
         }
     }

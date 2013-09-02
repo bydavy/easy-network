@@ -15,13 +15,13 @@ public class PrefixedBySizeAsyncWriter extends EasyMessageBaseAsyncWriter {
     private static final boolean DEBUG = EasyInternalSettings.DEBUG ? false : EasyInternalSettings.DEBUG_DEFAULT_FALSE;
 
     @GuardedBy("mLock")
-    boolean mIsWriting;
+    private boolean mIsWriting;
     @Nullable
     @GuardedBy("mLock")
-    private ByteBuffer mBuffer;
+    private final ByteBuffer mBuffer;
     @Nullable
     @GuardedBy("mLock")
-    private PrefixedBySizeWriter mMessageWriter;
+    private final PrefixedBySizeWriter mMessageWriter;
     @Nullable
     @GuardedBy("mLock")
     private EasyMessage mEasyMessage;

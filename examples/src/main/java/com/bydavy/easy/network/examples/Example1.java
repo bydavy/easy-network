@@ -64,14 +64,6 @@ public class Example1 {
     public static class MyEasyClientHandler implements EasyClientTcpHandler {
 
         @Override
-        public void onConnected(@Nonnull EasyClientTcp easyClient) {
-        }
-
-        @Override
-        public void onDisconnected(@Nonnull EasyClientTcp easyClient) {
-        }
-
-        @Override
         public void onMessageReceived(@Nonnull EasyClientTcp easyClient, @Nonnull EasyMessage message) {
             LogHelper.d(TAG, "Client received " + message);
             if (message instanceof PingMessage) {
@@ -131,14 +123,6 @@ public class Example1 {
 
     // Server code per client
     public static class MyEasyServerClientHandler implements EasyClientTcpHandler {
-
-        @Override
-        public void onConnected(@Nonnull EasyClientTcp easyClient) {
-        }
-
-        @Override
-        public void onDisconnected(@Nonnull EasyClientTcp easyClient) {
-        }
 
         @Override
         public void onMessageReceived(@Nonnull EasyClientTcp easyClient, @Nonnull EasyMessage message) {

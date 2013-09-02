@@ -1,10 +1,12 @@
 package com.bydavy.easy.network.utils;
 
-import javax.annotation.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.WillClose;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.SocketChannel;
+
 
 public final class EasyNetworkUtils {
 
@@ -27,6 +29,7 @@ public final class EasyNetworkUtils {
     public static short readShort(@Nonnull ByteBuffer buffer, @Nonnull ByteOrder byteOrder) {
         short result = buffer.getShort();
 
+        // FIXME : Should we swap byte for an short ?!
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
             result = byteSwapShort(result);
         }
@@ -93,34 +96,12 @@ public final class EasyNetworkUtils {
         return result;
     }
 
-    public static boolean write(@Nonnull @WillNotClose SocketChannel channel, @Nonnull ByteBuffer buffer) throws IOException {
-        while (buffer.hasRemaining()) {
-            int write = channel.write(buffer);
-            if (write == -1) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static boolean read(@Nonnull @WillNotClose SocketChannel channel, @Nonnull ByteBuffer buffer) throws IOException {
-        while (buffer.hasRemaining()) {
-            int read = channel.read(buffer);
-            if (read == -1) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public static void close(@Nullable @WillClose java.io.Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
             } catch (IOException e) {
-                // Nothing
+                // NOPMD - Nothing
             }
         }
     }
@@ -128,6 +109,4 @@ public final class EasyNetworkUtils {
     private EasyNetworkUtils() {
         throw new IllegalAccessError();
     }
-
-
 }

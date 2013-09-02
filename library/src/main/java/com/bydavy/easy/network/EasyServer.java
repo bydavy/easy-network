@@ -3,7 +3,7 @@ package com.bydavy.easy.network;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
-public interface EasyServer<T extends EasyServerHandler> {
+interface EasyServer<T extends EasyServerHandler> {
     void start();
 
     void stop();

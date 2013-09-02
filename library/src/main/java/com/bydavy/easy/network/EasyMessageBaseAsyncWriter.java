@@ -25,6 +25,7 @@ public abstract class EasyMessageBaseAsyncWriter implements EasyMessageAsyncWrit
     @Nullable
     @GuardedBy("mLock")
     protected StreamThreadListener<EasyMessageAsyncWriter> mListener;
+    @Nullable
     protected Queue<EasyMessage> mIncomingQueue;
 
 
@@ -59,7 +60,9 @@ public abstract class EasyMessageBaseAsyncWriter implements EasyMessageAsyncWrit
     public void endStream() throws IOException {
         synchronized (mLock) {
             try {
-                mChannel.shutdownOutput();
+                if (mChannel != null) {
+                    mChannel.shutdownOutput();
+                }
                 mListener.onStreamClosed(this);
             } catch (IOException e) {
                 mListener.onError(this);

@@ -10,7 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.AbstractSelectableChannel;
 
 public abstract class EasyMessageBaseAsyncReader implements EasyMessageAsyncReader {
-    @Nonnull
+    @Nullable
     protected StreamThreadListener<EasyMessageAsyncReader> mListener;
 
     @Nonnull
@@ -28,7 +28,7 @@ public abstract class EasyMessageBaseAsyncReader implements EasyMessageAsyncRead
     }
 
     @Override
-    public void setListener(StreamThreadListener<EasyMessageAsyncReader> listener) {
+    public void setListener(@Nonnull StreamThreadListener<EasyMessageAsyncReader> listener) {
         mListener = listener;
     }
 
@@ -73,7 +73,9 @@ public abstract class EasyMessageBaseAsyncReader implements EasyMessageAsyncRead
     public void endStream() throws IOException {
         synchronized (mLock) {
             try {
-                mChannel.shutdownInput();
+                if (mChannel != null) {
+                    mChannel.shutdownInput();
+                }
                 mListener.onStreamClosed(this);
             } catch (IOException e) {
                 mListener.onError(this);

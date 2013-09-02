@@ -33,12 +33,10 @@ class EasyServerTcpClientImpl implements EasyServerTcpClient {
     @Nonnull
     private final Queue<EasyMessage> mOutgoingQueue;
     @Nonnull
-    private final Queue<EasyMessage> mIncomingQueue;
-    @Nonnull
     private final EasyServerTcpClientImplListener mListener;
-    @Nonnull
+    @Nullable
     private EasyMessageAsyncReader mMessageAsyncReader;
-    @Nonnull
+    @Nullable
     private EasyMessageAsyncWriter mMessageAsyncWriter;
 
     @Nonnull
@@ -61,7 +59,6 @@ class EasyServerTcpClientImpl implements EasyServerTcpClient {
         mChannel = channel;
         mListener = listener;
         mOutgoingQueue = new ArrayBlockingQueue<EasyMessage>(QUEUE_SIZE);
-        mIncomingQueue = new ArrayBlockingQueue<EasyMessage>(QUEUE_SIZE);
     }
 
     public SocketChannel getChannel() {

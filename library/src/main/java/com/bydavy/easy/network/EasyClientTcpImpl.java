@@ -26,8 +26,6 @@ class EasyClientTcpImpl implements EasyClientTcp {
     private final SocketAddress mAddress;
     @Nonnull
     private final BlockingQueue<EasyMessage> mOutgoingQueue;
-    @Nonnull
-    private final BlockingQueue<EasyMessage> mIncomingQueue;
 
     @Nonnull
     private final Object mLock;
@@ -58,7 +56,6 @@ class EasyClientTcpImpl implements EasyClientTcp {
 
         mLock = new Object();
         mOutgoingQueue = new ArrayBlockingQueue<EasyMessage>(QUEUE_SIZE);
-        mIncomingQueue = new ArrayBlockingQueue<EasyMessage>(QUEUE_SIZE);
     }
 
     @Override
@@ -94,9 +91,8 @@ class EasyClientTcpImpl implements EasyClientTcp {
                 throw new IllegalStateException();
             }
 
-            SocketChannel socket = null;
             try {
-                socket = SocketChannel.open();
+                SocketChannel socket = SocketChannel.open();
                 mSocket = socket;
 
                 socket.configureBlocking(true);
@@ -184,15 +180,15 @@ class EasyClientTcpImpl implements EasyClientTcp {
 
     @Override
     public void join(@Nonnegative long millis) throws InterruptedException {
-        Thread thread = null;
+        Thread thread;
 
         synchronized (mLock) {
-            if (mThread != null) {
-                thread = mThread;
-            }
+            thread = mThread;
         }
 
         // Join holds the monitor (moved outside of the synchronized statement)
-        thread.join(millis);
+        if (thread != null) {
+            thread.join(millis);
+        }
     }
 }

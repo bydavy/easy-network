@@ -81,12 +81,12 @@ public class EasyServerTcpThread extends Thread implements SelectorLooper.Select
     }
 
     @Override
-    public void connectable(SelectorLooper selectorMainLoop, SelectionKey key) {
+    public void connectable(@Nonnull SelectorLooper selectorMainLoop, @Nonnull SelectionKey key) {
         throw new RuntimeException("Not used");
     }
 
     @Override
-    public void acceptable(SelectorLooper selectorMainLoop, SelectionKey key) {
+    public void acceptable(@Nonnull SelectorLooper selectorMainLoop, @Nonnull SelectionKey key) {
         try {
             ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
             SocketChannel clientChannel = serverChannel.accept();
@@ -122,7 +122,7 @@ public class EasyServerTcpThread extends Thread implements SelectorLooper.Select
     }
 
     @Override
-    public void readable(SelectorLooper selectorMainLoop, SelectionKey key) {
+    public void readable(@Nonnull SelectorLooper selectorMainLoop, @Nonnull SelectionKey key) {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         if (DEBUG_SELECTOR) {
             LogHelper.d(TAG, "Read " + clientChannel);
@@ -139,7 +139,7 @@ public class EasyServerTcpThread extends Thread implements SelectorLooper.Select
     }
 
     @Override
-    public void writable(SelectorLooper selectorMainLoop, SelectionKey key) {
+    public void writable(@Nonnull SelectorLooper selectorMainLoop, @Nonnull SelectionKey key) {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         if (DEBUG_SELECTOR) {
             LogHelper.d(TAG, "Write " + clientChannel);
@@ -207,6 +207,7 @@ public class EasyServerTcpThread extends Thread implements SelectorLooper.Select
             namePrefix = THREAD_NAME + "-pool-thread#";
         }
 
+        @Nonnull
         public Thread newThread(@Nonnull Runnable r) {
             final Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
             if (t.isDaemon()) {

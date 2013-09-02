@@ -22,8 +22,6 @@ class EasyClientTcpThread extends Thread implements SelectorLooper.SelectorMainL
     @Nonnull
     private final SocketChannel mSocket;
     @Nonnull
-    private final Selector mSelector;
-    @Nonnull
     private final EasyMessageAsyncReader mMessageReader;
     @Nonnull
     private final EasyMessageAsyncWriter mMessageWriter;
@@ -46,7 +44,6 @@ class EasyClientTcpThread extends Thread implements SelectorLooper.SelectorMainL
         mClient = client;
         mHandler = handler;
         mSocket = socket;
-        mSelector = selector;
         mMessageReader = messageReader;
         mMessageWriter = messageWriter;
 
@@ -86,17 +83,17 @@ class EasyClientTcpThread extends Thread implements SelectorLooper.SelectorMainL
     }
 
     @Override
-    public void connectable(SelectorLooper selectorMainLoop, SelectionKey key) {
+    public void connectable(@Nonnull SelectorLooper selectorMainLoop, @Nonnull SelectionKey key) {
         throw new RuntimeException("Not used");
     }
 
     @Override
-    public void acceptable(SelectorLooper selectorMainLoop, SelectionKey key) {
+    public void acceptable(@Nonnull SelectorLooper selectorMainLoop, @Nonnull SelectionKey key) {
         throw new RuntimeException("Not used");
     }
 
     @Override
-    public void writable(SelectorLooper selectorMainLoop, SelectionKey key) {
+    public void writable(@Nonnull SelectorLooper selectorMainLoop, @Nonnull SelectionKey key) {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         if (DEBUG_SELECTOR) {
             LogHelper.d(TAG, "Write " + clientChannel);
@@ -113,7 +110,7 @@ class EasyClientTcpThread extends Thread implements SelectorLooper.SelectorMainL
     }
 
     @Override
-    public void readable(SelectorLooper selectorMainLoop, SelectionKey key) {
+    public void readable(@Nonnull SelectorLooper selectorMainLoop, @Nonnull SelectionKey key) {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         if (DEBUG_SELECTOR) {
             LogHelper.d(TAG, "Read " + clientChannel);
